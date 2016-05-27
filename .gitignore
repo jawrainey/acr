@@ -3,3 +3,5 @@
 venv/
 audios/
 *.swp
+*.swo
+*.pyc

@@ -1,18 +1,22 @@
 from flask import render_template
+from app import app
 
 
+@app.route('/')
 def index():
     # Landing page: what's the project about?
     # Big button to "Get involved"
     return render_template('index.html')
 
 
+@app.route('/involved')
 def involved():
     # A form that allows participants to input their skills or projects?
     # Drop-down for auto-completion
     return render_template('involved.html')
 
 
+@app.route('/citizen')
 def citizen():
     # get all the data
     # store it into a database

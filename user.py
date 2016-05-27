@@ -1,5 +1,8 @@
 # Shipping a single user-specific token has limitations.
+
 # TODO: write script to invoke this script once pi boots.
+# TODO: who is going to configure the WiFi?
+
 API_KEY = 'helloworld'
 all_messages = []
 unread_messages = []
