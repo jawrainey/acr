@@ -1,4 +1,5 @@
 # Shipping a single user-specific token has limitations.
+# TODO: write script to invoke this script once pi boots.
 API_KEY = 'helloworld'
 all_messages = []
 unread_messages = []
@@ -52,4 +53,4 @@ def main():
     return 0
 
 if __name__ == "__main__":
-    __upload('1464205566000', 'bob')
+    __upload('/Users/b5060990/Desktop/1464205566000', 'bob')

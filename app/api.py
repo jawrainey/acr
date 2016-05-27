@@ -1,6 +1,5 @@
-from flask import Flask, request, abort, jsonify
-
-app = Flask(__name__)
+from flask import request, abort, jsonify
+from app import app
 
 
 @app.route('/api/download', methods=['GET'])
