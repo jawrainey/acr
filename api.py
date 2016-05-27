@@ -1,4 +1,10 @@
-def download_audio(token):
+from flask import Flask, request, abort, jsonify
+
+app = Flask(__name__)
+
+
+@app.route('/api/download', methods=['GET'])
+def download(token):
     # Token: who is the user?
     # Algorithm: find NEW audios for user; those they are matched to.
     # Return: audio file from matched user(s) (or download URIs?)
@@ -12,10 +18,36 @@ def download_audio(token):
     return 0
 
 
-def upload_audio():
-    # Token: who is the user?
-    # File-stream: what do I want to upload?
-    # Return: fail/success
+@app.route('/api/upload', methods=['POST'])
+def upload():
+    # TODO: we are trusting user input in the Python upload script.
+    # TODO: store references in database for the messages.
 
-    # Store file to a database for the given user.
-    return 0
+    if request.data:
+        import base64
+        import os
+        import time
+
+        # Used to uniquely identify the artefact and user.
+        uname = request.json['token']
+
+        # Upload the file to the specific users directory.
+        # Each file is linked with a receiver within the database.
+        # NOTE: do not care about path is its hosted on a UNIX machine.
+        ufiles = "audios/" + uname
+
+        # For when a user first publishes a file.
+        if not os.path.exists(ufiles):
+            os.makedirs(ufiles)
+
+        # A UNIX timestamp is used to uniquely identify the file
+        with open(ufiles + "/" + str(int((time.time() + (60*60)))), 'wb') as f:
+            # NOTE: binary is encoded to allow other parameters to also be sent.
+            f.write(base64.b64decode(request.json['message']))
+
+        return jsonify({'success': True}), 201
+    else:
+        abort(500)
+
+if __name__ == "__main__":
+    app.run(host='127.0.0.1', port=8080, debug=True)

@@ -1,14 +1,27 @@
 # Shipping a single user-specific token has limitations.
-token = ''
+API_KEY = 'helloworld'
 all_messages = []
 unread_messages = []
+HOST = "http://localhost:8080/"
 
 
-def upload(message):
-    # Message: the created audio-file
-    # Logic:
-    # Send a REST request to the server to upload the audio file just created.
-    return 0
+def __upload(audio_file, receiver):
+    import base64
+    import requests
+
+    # NOTE: messages are stored locally to support playback, browsing & backup.
+    with open(audio_file, 'rb') as af:
+        voice_message = af.read()
+
+    # NOTE: encode to binary to send with json in one request
+    res = requests.post(url=HOST + "api/upload",
+                        json={'token': API_KEY,
+                              'receiver': receiver,
+                              'message': base64.b64encode(voice_message)},
+                        headers={'Content-Type': 'application/json'})
+
+    if res.status_code is not 201:
+        print "TODO: blink a red light."
 
 
 def download():
@@ -37,3 +50,6 @@ def main():
     # Run every 5 minutes to check for new new audios (download_audio)
     # if there is an audio: download the audio, then send a notification
     return 0
+
+if __name__ == "__main__":
+    __upload('1464205566000', 'bob')
