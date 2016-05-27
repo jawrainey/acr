@@ -19,7 +19,7 @@ def __upload(audio_file, receiver):
 
     # NOTE: encode to binary to send with json in one request
     res = requests.post(url=HOST + "api/upload",
-                        json={'token': API_KEY,
+                        json={'sender': API_KEY,
                               'receiver': receiver,
                               'message': base64.b64encode(voice_message)},
                         headers={'Content-Type': 'application/json'})
