@@ -25,7 +25,6 @@ def upload():
     if request.data:
         import base64
         import os
-        import time
         from app import db, models
 
         # Used to uniquely identify the artefact and user.
@@ -43,7 +42,7 @@ def upload():
             os.makedirs(ufiles)
 
         # A UNIX timestamp is used to uniquely identify the file
-        path = ufiles + "/" + str(int((time.time() + (60*60))))
+        path = ufiles + "/" + str(request.json['filename'])
         with open(path, 'wb') as f:
             # NOTE: binary is encoded to allow other parameters to also be sent.
             f.write(base64.b64decode(request.json['message']))

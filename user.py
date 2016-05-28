@@ -11,6 +11,7 @@ HOST = "http://localhost:8080/"
 
 def __upload(audio_file, receiver):
     import base64
+    import time
     import requests
 
     # NOTE: messages are stored locally to support playback, browsing & backup.
@@ -21,6 +22,7 @@ def __upload(audio_file, receiver):
     res = requests.post(url=HOST + "api/upload",
                         json={'sender': API_KEY,
                               'receiver': receiver,
+                              'filename': str(int((time.time() + (60*60)))),
                               'message': base64.b64encode(voice_message)},
                         headers={'Content-Type': 'application/json'})
 
