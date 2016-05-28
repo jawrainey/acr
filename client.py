@@ -63,6 +63,30 @@ def __save(receiver, message):
         f.write(message)
 
 
+def __notify():
+    # Change light based on action?
+    # Input could be a list that represents a pattern
+    # of actions -- similar to noises for BIOS?
+    return 0
+
+
+def __matches(current):
+    # Determine who we are communicating with
+    # invoke matches API that should return
+    # a list of all the users you can talk with.
+    return 0
+
+
+def users(current):
+    # Enable the current user (button presser) to go through all matched users.
+    return 0
+
+
+def next(receiver, current):
+    # Similar to previous but forwards...
+    return 0
+
+
 def previous(receiver, current):  # Similar logic for next()
     # Grab the list of local files
     # Sort into DESC order (they are UNIX timestamps)
@@ -70,13 +94,6 @@ def previous(receiver, current):  # Similar logic for next()
     # invoke play method
     # current - 1
     return
-
-
-def __matches():
-    # Determine who we are communicating with
-    # invoke matches API that should return
-    # a list of all the users you can talk with.
-    return 0
 
 
 def record(current):
@@ -88,7 +105,7 @@ def record(current):
     return
 
 
-def play():
+def play(receiver):
     # Determine who we are communicating with
     # Download all latest (not local) audio messages
     # If there are new files: invoke next(current)
@@ -97,26 +114,10 @@ def play():
     return
 
 
-def next_user():
-    # The "User" button will allow the user (button presser) to go through all
-    # the users that they are matched with. Therefore, the above buttons all
-    # take the user as parameter.
-    return 0
-
-
-def notify():
-    # Change light based on action?
-    # Input could be a list that represents a pattern
-    # of actions -- similar to noises for BIOS?
-    return 0
-
-
 def main():
     # Run every 5 minutes to check for new new audios (download_audio)
     # if there is an audio: download the audio, then send a notification
     return 0
 
 if __name__ == "__main__":
-    __download('trandomcit', '1')
-    # __upload('~/Desktop/PRETEND-PI/audios/trandomcit/1464205566000',
-    # 'trandomcit')
+    main()
