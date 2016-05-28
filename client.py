@@ -117,4 +117,6 @@ def main():
     return 0
 
 if __name__ == "__main__":
-    __upload('/Users/b5060990/Desktop/1464205566000', 'bob')
+    __download('trandomcit', '1')
+    # __upload('~/Desktop/PRETEND-PI/audios/trandomcit/1464205566000',
+    # 'trandomcit')
