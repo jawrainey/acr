@@ -47,23 +47,67 @@ def __download(receiver, latest_message_name):
         # TODO: notify user that new message(s) received (see: # zf.namelist())
     else:
         print "TODO: blink a red light."
+
+
+def __save(receiver, message):
+    import os
+    import time
+    ufiles = "audios/" + receiver
+
+    # For when a user first publishes a file.
+    if not os.path.exists(ufiles):
+        os.makedirs(ufiles)
+
+    path = ufiles + "/" + str(int((time.time() + (60*60))))
+    with open(path, 'wb') as f:
+        f.write(message)
+
+
+def previous(receiver, current):  # Similar logic for next()
+    # Grab the list of local files
+    # Sort into DESC order (they are UNIX timestamps)
+    # Find location of current - 1
+    # invoke play method
+    # current - 1
+    return
+
+
+def __matches():
+    # Determine who we are communicating with
+    # invoke matches API that should return
+    # a list of all the users you can talk with.
     return 0
 
 
-def controls():
-    # Note: the user would have all the audios stored on their device.
-    # A copy is stored in the database encase of failure.
-    # When they press "Next" or "Previous" they go through their stored audios.
+def record(current):
+    # Determine who we are communicating with
+    # Take input from the microphone and save to local file
+    # locally token/<receiver>
+    # Upload data the server
+    # Flash light to notify success/failure
+    return
 
-    # The "Record" button will record an audio, then invoke upload_audio()
 
-    # The "Notify" icon
+def play():
+    # Determine who we are communicating with
+    # Download all latest (not local) audio messages
+    # If there are new files: invoke next(current)
+    # Otherwise, play current
+    # TODO: helper method to play an audio-file on pi
+    return
 
-    # The "Play" button will play the latest audio.
 
+def next_user():
     # The "User" button will allow the user (button presser) to go through all
     # the users that they are matched with. Therefore, the above buttons all
     # take the user as parameter.
+    return 0
+
+
+def notify():
+    # Change light based on action?
+    # Input could be a list that represents a pattern
+    # of actions -- similar to noises for BIOS?
     return 0
 
 
