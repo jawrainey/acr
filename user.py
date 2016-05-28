@@ -30,8 +30,23 @@ def __upload(audio_file, receiver):
         print "TODO: blink a red light."
 
 
-def download():
-    # Send a GET request to the server to acquire all new audio files.
+def __download(receiver, latest_message_name):
+    import requests
+    data = ("?sender=" + API_KEY +
+            "&receiver=" + receiver +
+            "&latest=" + latest_message_name)
+    res = requests.get(url=HOST + "api/download" + data)
+
+    if res.status_code == 200:
+        import io
+        import zipfile
+        # In memory-stream used as ZipFile constructor expects a file.
+        # Prevents a zip file being saved locally that would need to be removed.
+        with zipfile.ZipFile(io.BytesIO(res.content), 'r') as zf:
+            zf.extractall('audios/' + receiver + '/')
+        # TODO: notify user that new message(s) received (see: # zf.namelist())
+    else:
+        print "TODO: blink a red light."
     return 0
 
 

@@ -1,20 +1,40 @@
-from flask import request, abort, jsonify
+from flask import request, abort, jsonify, Response
 from app import app
 
 
 @app.route('/api/download', methods=['GET'])
-def download(token):
-    # Token: who is the user?
-    # Algorithm: find NEW audios for user; those they are matched to.
-    # Return: audio file from matched user(s) (or download URIs?)
+def download():
+    # TODO: validate query parameters.
+    from app import db, models
+    # All messages between those in a conversation.
+    # TODO: simplify query to only return messages after latest
+    all_messages = db.session.query(models.Message).filter(
+        models.Message.sid == str(request.args.get('sender')),
+        models.Message.rid == str(request.args.get('receiver'))).order_by(
+            models.Message.mid).all()
 
-    # Ask the server every N seconds if a new message has been received for
-    # every user (or a given one)... Are there any new messages?
+    num_client_msgs = int(request.args.get('latest'))
+    # Compare the amount of messages the server knows with that of the client.
+    if len(all_messages) > num_client_msgs:
+        # All messages a sender has recorded that the receiver does not have.
+        audio_files = all_messages[-(len(all_messages) - num_client_msgs):]
+        import zipfile
+        import io
+        # Store the zip-file to memory; prevents creating/deleting local zip.
+        datafile = io.BytesIO()
+        # Write all the new audios to a zip in a temporary directory
+        with zipfile.ZipFile(datafile, 'w') as zf:
+            for audio_file in audio_files:
+                filepath = audio_file.message
+                # Use the file name (sent timestamp) for client storage.
+                zf.write(filepath, filepath.split("/")[-1])
+        # Move read-write position to start for data streaming.
+        datafile.seek(0)
 
-    # If there are (for a given user; each has their own script), then:
-    # call this REST API to
-    # When a user makes a request
-    return 0
+        return Response(datafile,
+                        mimetype='application/zip',
+                        headers={'Content-Disposition':
+                                 'attachment;filename=voice_messages.zip'})
 
 
 @app.route('/api/upload', methods=['POST'])
