@@ -75,3 +75,19 @@ def upload():
         return jsonify({'success': True}), 201
     else:
         abort(500)
+
+
+@app.route('/api/matches', methods=['GET'])
+def matches():
+    from app import db, models
+
+    user = str(request.args.get('user'))
+    matches = None
+
+    # IFF the user is known, then we can query for pairs.
+    # A simple mechanism to overcome malicious intent.
+    # TODO: validate user input further; trust no-one, especially our users!
+    if db.session.query(models.User).filter(models.User.token == user).first():
+        matches = [usr.mid for usr in db.session.query(models.Pair).filter(
+            models.Pair.uid == user).all()]
+    return jsonify({"matches": matches}), 201

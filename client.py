@@ -70,11 +70,12 @@ def __notify():
     return 0
 
 
-def __matches(current):
-    # Determine who we are communicating with
-    # invoke matches API that should return
-    # a list of all the users you can talk with.
-    return 0
+def __matches():
+    import json
+    import requests
+
+    res = requests.get(url=HOST + "api/matches" + "?user=" + API_KEY)
+    return json.loads(res.content)['matches']
 
 
 def users(current):
