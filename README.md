@@ -22,6 +22,29 @@ using [Flask](http://flask.pocoo.org/) as the back-end (with
 [Boostrap Freelancer](https://github.com/BlackrockDigital/startbootstrap-freelancer)
 as the frontend.
 
+### File structure
+
+This repository hosts the client, server, website, and service code for the prototypes.
+
+- run.py
+    - Starts the web server when invoked
+- app/
+    - **/static/**
+        - The `css/javascript/images` used by the website
+    - **/templates/**
+        - The markup files used to create the frontend
+    - __init__.py
+        - Used to initialise the Flask application
+    - api.py
+        - The REST API for client interactions (upload/download/matching)
+    - models.py
+        - Database representation for the ORM
+    - views.py
+        - Delivers web-pages (templates) for given requests
+- **client/**
+    - client.py
+        - An independent script that provides audio communication functionality for devices
+
 ## Installation
 
 Create a [virtualenv](http://docs.python-guide.org/en/latest/dev/virtualenvs/) to
@@ -39,5 +62,4 @@ You can view the website locally at `http://127.0.0.1:8080/` by running the
     python run.py
 
 To make the website [externally visible](http://flask.pocoo.org/docs/0.11/quickstart/#a-minimal-application)
-modify the host address to in `run.py` and `client.py` to `0.0.0.0`, which uses
-the machines IP address it is running to host the website.
+modify the host address in `run.py` and `client.py` to `0.0.0.0`.
