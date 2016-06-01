@@ -1,39 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ACResearch -- Creating Community Research Teams</title>
-    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/freelancer.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
-    <link href="http://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
-    <link href="http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet">
-</head>
-<body id="page-top" class="index">
-  <nav class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
-      <div class="navbar-header page-scroll">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="/">JAR</a>
-      </div>
-
-      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-        <ul class="nav navbar-nav navbar-right">
-          <li class="hidden"><a href="#page-top"></a></li>
-          <li class="page-scroll"><a href="#about">About</a></li>
-          <li><a href="mailto:hi@jawrainey.me?subject=Contact:">Contact</a></li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-
+{% extends "layout.html" %}
+{% block content %}
+  <!-- Gods forgive me for this inline sin -->
+  <style>body { background: #18bc9c; }</style>
   <header>
     <div class="container">
       <div class="row">
@@ -55,80 +23,4 @@
       </div>
     </div>
   </header>
-
-  <section id="contact">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-12 text-center">
-          <h2>Citizen participation</h2>
-          <hr class="star-primary">
-          <div class="col-sm-2 col-lg-offset-3 portfolio-item">
-            <img src="{{ url_for('static', filename='img/portfolio/cabin.png') }}" class="img-responsive" alt="">
-            <span class="text-content"><h5>The skill</h5></span>
-          </div>
-          <div class="col-sm-2 portfolio-item">
-            <img src="{{ url_for('static', filename='img/portfolio/cake.png') }}" class="img-responsive" alt="">
-            <span class="text-content"><h5>The skill</h5></span>
-          </div>
-          <div class="col-sm-2 portfolio-item">
-            <img src="{{ url_for('static', filename='img/portfolio/circus.png') }}" class="img-responsive" alt="">
-            <span class="text-content"><h5>The skill</h5></span>
-          </div>
-        </div>
-      </div>
-      <br>
-
-      <div class="row">
-        <div class="col-lg-8 col-lg-offset-2">
-          <form name="sentMessage" id="contactForm" action="POST">
-
-            <div class="row control-group">
-              <div class="form-group col-xs-12 floating-label-form-group controls">
-                <label>Name</label>
-                <input type="text" class="form-control" placeholder="Name" id="name" required data-validation-required-message="Please enter your name.">
-                <p class="help-block text-danger"></p>
-              </div>
-            </div>
-
-            <div class="row control-group">
-              <div class="form-group col-xs-12 floating-label-form-group controls">
-                <label>Email Address</label>
-                <input type="email" class="form-control" placeholder="Email Address" id="email" required data-validation-required-message="Please enter your email address.">
-                <p class="help-block text-danger"></p>
-              </div>
-            </div>
-
-            <div class="row control-group">
-              <div class="form-group col-xs-12 floating-label-form-group controls">
-                <label>Age</label>
-                <input class="form-control" placeholder="Age" id="age" required data-validation-required-message="Please enter your phone number.">
-                <p class="help-block text-danger"></p>
-              </div>
-            </div>
-
-            <div class="row control-group">
-              <div class="form-group col-xs-12 floating-label-form-group controls">
-                <label>Address</label>
-                <textarea rows="3" class="form-control" placeholder="Address" id="address" required data-validation-required-message="Please enter a message."></textarea>
-                <p class="help-block text-danger"></p>
-              </div>
-            </div>
-            <br>
-
-            <div class="row">
-              <div class="form-group col-xs-12">
-                <button type="submit" class="btn btn-success btn-lg">Send</button>
-              </div>
-            </div>
-
-          </form>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/freelancer.js') }}"></script>
-</body>
-</html>
+{%- endblock %}

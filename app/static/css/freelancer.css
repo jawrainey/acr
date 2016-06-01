@@ -86,8 +86,8 @@ header {
 }
 
 header .container {
-    padding-top: 180px;
-    padding-bottom: 150px;
+    padding-top: 100px;
+    padding-bottom: 0;
 }
 
 header img {
@@ -110,8 +110,8 @@ header .intro-text .skills {
 
 @media(min-width:768px) {
     header .container {
-        padding-top: 100px;
-        padding-bottom: 150px;
+        padding-top: 50px;
+        padding-bottom: 0;
     }
 
     header .intro-text .name {
@@ -196,7 +196,7 @@ header .intro-text .skills {
 }
 
 section {
-    padding: 100px 0;
+    padding: 50px 0;
 }
 
 section h2 {
@@ -489,4 +489,8 @@ footer .footer-below {
   width: 50%;
   margin: 0 auto;
   padding-bottom: 30%
+}
+
+.navbar {
+    margin-bottom: 0;
 }

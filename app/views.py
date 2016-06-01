@@ -9,18 +9,18 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/involved')
+@app.route('/researcher')
 def involved():
     # A form that allows participants to input their skills or projects?
     # Drop-down for auto-completion
-    return render_template('involved.html')
+    return render_template('form.html')
 
 
 @app.route('/citizen')
 def citizen():
     # get all the data
     # store it into a database
-    return render_template('citizen.html')
+    return render_template('form.html')
 
 
 def __selection():
