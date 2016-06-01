@@ -30,7 +30,7 @@ def download():
                 # TODO: remove this dependency on path to unique filename.
                 path_to_message = "app/" + audio_file.message
                 # Use the file name (sent timestamp) for client storage.
-                zf.write(filepath, filepath.split("/")[-1])
+                zf.write(path_to_message, path_to_message.split("/")[-1])
         # Move read-write position to start for data streaming.
         datafile.seek(0)
 
