@@ -4,10 +4,8 @@ from app import app
 
 @app.route('/api/download', methods=['GET'])
 def download():
-    # TODO: validate query parameters.
     from app import db, models
-    # The messages are stored on the client/server in one folder as unix timestamps
-    # This enables comparison for unread messages based on the sum difference.
+    # All the messages sent within a conversation
     all_messages = db.session.query(models.Message).filter(
         models.Message.sid == str(request.args.get('sender')),
         models.Message.rid == str(request.args.get('receiver'))).order_by(
@@ -27,10 +25,8 @@ def download():
             # NOTE: the path is critical to file storage on server and client!
             for audio_file in audio_files:
                 # Pre-pending as the stored message is the path client-side.
-                # TODO: remove this dependency on path to unique filename.
-                path_to_message = "app/" + audio_file.message
                 # Use the file name (sent timestamp) for client storage.
-                zf.write(path_to_message, path_to_message.split("/")[-1])
+                zf.write(audio_file.message, audio_file.message.split("/")[-1])
         # Move read-write position to start for data streaming.
         datafile.seek(0)
 
@@ -55,15 +51,13 @@ def upload():
         import os
         from app import db, models
 
-        # Used to uniquely identify the artefact and user.
-        # Convert from unicode to string
+        # Used to uniquely identify the artefact and users.
         sender = str(request.json['sender'])
         receiver = str(request.json['receiver'])
 
-        # Upload the file to the specific users directory.
-        # Each file is linked with a receiver within the database.
-        # NOTE: do not care about path is its hosted on a UNIX machine.
-        ufiles = "audios/" + sender
+        # Upload to a shared conversation folder by unique tokens.
+        # Store in the root of the flask application.
+        ufiles = "audios/" + sender + "_" + receiver
 
         # For when a user first publishes a file.
         if not os.path.exists(ufiles):

@@ -89,7 +89,7 @@ class Controls:
             import zipfile
             # In memory-stream used as ZipFile constructor expects a file.
             # Prevents a zip file being saved locally that need not be removed.
-            path = 'client/audios/' + receiver + '/'
+            path = 'client/audios/' + self.api_key + '_' + receiver + '/'
             with zipfile.ZipFile(io.BytesIO(res.content), 'r') as zf:
                 zf.extractall(path)
             # A list of locations to unread messages from sender to receiver
