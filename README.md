@@ -32,7 +32,7 @@ This repository hosts the client, server, website, and service code for the prot
         - The `css/javascript/images` used by the website
     - **/templates/**
         - The markup files used to create the frontend
-    - __init__.py
+    - \__init\__.py
         - Used to initialise the Flask application
     - api.py
         - The REST API for client interactions (upload/download/matching)
