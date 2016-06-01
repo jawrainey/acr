@@ -10,7 +10,7 @@ def index():
 
 
 @app.route('/researcher')
-def involved():
+def researcher():
     # A form that allows participants to input their skills or projects?
     # Drop-down for auto-completion
     return render_template('form.html')

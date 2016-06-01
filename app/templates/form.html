@@ -4,19 +4,19 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-12 text-center">
-          <h2>Citizen participation</h2>
+          <h2>{{ request.endpoint }} participation</h2>
           <hr class="star-primary">
           <div class="col-sm-2 col-lg-offset-3 portfolio-item">
             <img src="{{ url_for('static', filename='img/portfolio/cabin.png') }}" class="img-responsive" alt="">
-            <span class="text-content"><h5>The skill</h5></span>
+            <span class="text-content"><h5>Exploring</h5></span>
           </div>
           <div class="col-sm-2 portfolio-item">
             <img src="{{ url_for('static', filename='img/portfolio/cake.png') }}" class="img-responsive" alt="">
-            <span class="text-content"><h5>The skill</h5></span>
+            <span class="text-content"><h5>Baking</h5></span>
           </div>
           <div class="col-sm-2 portfolio-item">
             <img src="{{ url_for('static', filename='img/portfolio/circus.png') }}" class="img-responsive" alt="">
-            <span class="text-content"><h5>The skill</h5></span>
+            <span class="text-content"><h5>Juggling</h5></span>
           </div>
         </div>
       </div>
@@ -36,7 +36,7 @@
             <div class="row control-group">
               <div class="form-group col-xs-12 floating-label-form-group controls">
                 <label>Email Address</label>
-                <input type="email" class="form-control" placeholder="Email Address" id="email" required data-validation-required-message="Please enter your email address.">
+                <input type="email" class="form-control" placeholder="Email address" id="email" required data-validation-required-message="Please enter your email address.">
                 <p class="help-block text-danger"></p>
               </div>
             </div>
@@ -56,6 +56,15 @@
                 <p class="help-block text-danger"></p>
               </div>
             </div>
+
+            <div class="row control-group">
+              <div class="form-group col-xs-12 floating-label-form-group controls">
+                <label>Skills</label>
+                <textarea rows="3" class="form-control" placeholder="Please enter your skills" id="address" required data-validation-required-message="Please enter your skills."></textarea>
+                <p class="help-block text-danger"></p>
+              </div>
+            </div>
+
             <br>
 
             <div class="row">
