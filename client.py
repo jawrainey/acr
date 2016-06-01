@@ -13,22 +13,20 @@ class Controls:
 
     def __init__(self):
         self.__update_state()
-        # Last user matched is the current
-        self.cmu = self.matched_users[-1]
 
     def record(self):
         message = "path/to/recording"
         self.__save(message)
         self.__upload(message)
-        self.notify("We have uploaded a recording")
+        self.__notify("We have uploaded a recording")
 
     def play(self, filename):
         import subprocess
         subprocess.call(["afplay", filename])
-        self.notify("We are playing a recording")
+        self.__notify("We are playing a recording")
 
     def next(self):
-        if self.unread_messages:
+        if self.data[self.cmu]['unread']:
             # then add to the end of the read list and remove from unread list
             self.current_message = self.data[self.cmu]['unread'][0]
             self.data[self.cmu]['read'].append(self.data[self.cmu]['unread'][0])
@@ -48,7 +46,7 @@ class Controls:
     def previous(self):
         # Play the previous message based on the current message
         self.play(self.data[self.cmu]['read'][
-                      self.data[self.cmu]['read'].index(self.current_message) - 1])
+            self.data[self.cmu]['read'].index(self.current_message) - 1])
 
     def users(self):
         # This method grabs data for the NEXT users
@@ -84,7 +82,7 @@ class Controls:
         import requests
         data = ("?sender=" + self.api_key +
                 "&receiver=" + receiver +
-                "&latest=" + latest_message_name)
+                "&latest=" + str(latest_message_name))
         res = requests.get(url=self.host + "api/download" + data)
 
         if res.status_code == 200:
@@ -92,10 +90,10 @@ class Controls:
             import zipfile
             # In memory-stream used as ZipFile constructor expects a file.
             # Prevents a zip file being saved locally that need not be removed.
-            path = 'audios/' + self.receiver + '/'
+            path = 'audios/' + receiver + '/'
             with zipfile.ZipFile(io.BytesIO(res.content), 'r') as zf:
                 zf.extractall(path)
-            # ??
+            # A list of locations to unread messages from sender to receiver
             return [path + fname for fname in zf.namelist()]
         else:
             print "TODO: blink a red light."
@@ -105,7 +103,7 @@ class Controls:
         import requests
 
         res = requests.get(url=self.host + "api/matches" + "?user=" + self.api_key)
-        return json.loads(res.content)['matches']
+        return [str(match) for match in json.loads(res.content)['matches']]
 
     def __all_messages(self, user):
         # TODO: this should exclude unread messages if they have not been read!
@@ -126,13 +124,23 @@ class Controls:
             f.write(message)
 
     def __update_state(self):
-        for user in self.__matches():
+        # Prevents multiple requests as we must assign cmu below
+        matches = self.__matches()
+        for user in matches:
             # As there may be multiple conversations user => matches
             # We must find all read/unread for each conversation.
+            am = self.__all_messages(user)
             self.data[user] = {
-                'read': self.all_messages(user),
-                'unread': self.__unread_messages(
-                    user, len(self.data[user]['read']))}
+                'read': am,
+                'unread': self.__unread_messages(user, len(am))
+            }
+            # Last user matched is the current
+            self.cmu = matches[-1]
+            # Current message is most recent unread, otherwise latest read
+            if self.data[self.cmu]['unread']:
+                self.current_message = self.data[self.cmu]['unread'][-1]
+            else:
+                self.current_message = self.data[self.cmu]['read'][-1]
 
     def __notify(self, message):
         print "Flash: " + message
