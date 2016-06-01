@@ -1,7 +1,7 @@
 # CRES: Citizen-RESearchers
 
 
->> How can technologies mediate the relationship between citizens and researchers,
+> How can technologies mediate the relationship between citizens and researchers,
 and facilitate an active role in research for citizens?
 
 We ([Jay](https://openlab.ncl.ac.uk/people/b5060990/),
@@ -30,7 +30,6 @@ install the dependencies required to run the system:
     virtualenv venv
     source venv/bin/activate
     pip install -r requirements.txt
-
 
 ### Viewing the site
 
