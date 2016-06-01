@@ -132,7 +132,7 @@ class Controls:
             self.data[user] = {
                 'read': self.all_messages(user),
                 'unread': self.__unread_messages(
-                    user, self.data[user]['read'][-1].split(-1))}
+                    user, len(self.data[user]['read']))}
 
     def __notify(self, message):
         print "Flash: " + message
