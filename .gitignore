@@ -6,3 +6,4 @@ audios/
 *.swo
 *.pyc
 *.db
+.idea/*
