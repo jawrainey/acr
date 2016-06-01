@@ -6,8 +6,8 @@ from app import app
 def download():
     # TODO: validate query parameters.
     from app import db, models
-    # All messages between those in a conversation.
-    # TODO: simplify query to only return messages after latest
+    # The messages are stored on the client/server in one folder as unix timestamps
+    # This enables comparison for unread messages based on the sum difference.
     all_messages = db.session.query(models.Message).filter(
         models.Message.sid == str(request.args.get('sender')),
         models.Message.rid == str(request.args.get('receiver'))).order_by(
@@ -24,8 +24,11 @@ def download():
         datafile = io.BytesIO()
         # Write all the new audios to a zip in a temporary directory
         with zipfile.ZipFile(datafile, 'w') as zf:
+            # NOTE: the path is critical to file storage on server and client!
             for audio_file in audio_files:
-                filepath = audio_file.message
+                # Pre-pending as the stored message is the path client-side.
+                # TODO: remove this dependency on path to unique filename.
+                path_to_message = "app/" + audio_file.message
                 # Use the file name (sent timestamp) for client storage.
                 zf.write(filepath, filepath.split("/")[-1])
         # Move read-write position to start for data streaming.
@@ -35,6 +38,11 @@ def download():
                         mimetype='application/zip',
                         headers={'Content-Disposition':
                                  'attachment;filename=voice_messages.zip'})
+    elif len(all_messages) == num_client_msgs:
+        # There are no new messages (content) to return
+        return '', 204
+    else:
+        abort(500)
 
 
 @app.route('/api/upload', methods=['POST'])

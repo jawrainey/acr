@@ -1,6 +1,5 @@
 class Controls:
-    # These could be in a config file, but #YOLO
-    api_key = 'helloworld'
+    api_key = 'jay'
     host = "http://localhost:8080/"
 
     # Store for each matched user:
@@ -76,7 +75,7 @@ class Controls:
                             headers={'Content-Type': 'application/json'})
 
         if res.status_code is not 201:
-            print "TODO: blink a red light."
+            print "TODO: blink a red light for UPLOAD."
 
     def __unread_messages(self, receiver, latest_message_name):
         import requests
@@ -90,13 +89,15 @@ class Controls:
             import zipfile
             # In memory-stream used as ZipFile constructor expects a file.
             # Prevents a zip file being saved locally that need not be removed.
-            path = 'audios/' + receiver + '/'
+            path = 'client/audios/' + receiver + '/'
             with zipfile.ZipFile(io.BytesIO(res.content), 'r') as zf:
                 zf.extractall(path)
             # A list of locations to unread messages from sender to receiver
             return [path + fname for fname in zf.namelist()]
+        elif res.status_code == 204:
+            print "Note: there are no new messages to download"
         else:
-            print "TODO: blink a red light."
+            print "TODO: blink a red light for DOWNLOAD."
 
     def __matches(self):
         import json
@@ -108,7 +109,7 @@ class Controls:
     def __all_messages(self, user):
         # TODO: this should exclude unread messages if they have not been read!
         import os
-        return [f for f in os.listdir("audios/" + user) if ".ogg" in f]
+        return [f for f in os.listdir("client/audios/" + user) if ".ogg" in f]
 
     def __save(self, message):
         import os
@@ -126,6 +127,7 @@ class Controls:
     def __update_state(self):
         # Prevents multiple requests as we must assign cmu below
         matches = self.__matches()
+
         for user in matches:
             # As there may be multiple conversations user => matches
             # We must find all read/unread for each conversation.
