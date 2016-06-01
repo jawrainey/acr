@@ -1,12 +1,11 @@
 # CRES: Citizen-RESearchers
 
 
-> How can technologies mediate the relationship between citizens and researchers,
-and facilitate an active role in research for citizens?
+> How can technologies enable citizens to have an active role in research?
 
 We ([Jay](https://openlab.ncl.ac.uk/people/b5060990/),
 [Aare](https://openlab.ncl.ac.uk/people/b5064252/),
-[Reem](https://openlab.ncl.ac.uk/people/b5017717/)) explore these questions through the design of
+[Reem](https://openlab.ncl.ac.uk/people/b5017717/)) explore this question through the design of
 two bespoke hardware prototypes and accompanying software, which is split into three software components:
 
 1. A website to acquire new participants using their perceived and desired
