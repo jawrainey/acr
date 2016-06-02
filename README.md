@@ -1,4 +1,4 @@
-# CRES: Citizen-RESearchers
+# ACR: Active Citizen Research
 
 
 > How can technologies enable citizens to have an active role in research?
