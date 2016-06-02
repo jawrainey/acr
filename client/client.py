@@ -1,3 +1,6 @@
+import subprocess, os, sys, signal, time
+import RPi.GPIO as GPIO
+
 class Controls:
     api_key = 'jay'
     host = "http://localhost:8080/"
@@ -15,18 +18,38 @@ class Controls:
     cmu = None
     # Path to the current message for current user
     current_message = None
+    #button pins
+    button = 7
+    proc = None
+    recording = False
 
     def __init__(self):
-        self.update_state()
+        #self.update_state()        
+        # setup pins
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(self.button, GPIO.IN, GPIO.PUD_UP)
+        print ("Starting Server")
 
     def record(self):
         """
         Records, saves then uploads an audio message.
         """
+        if (self.recording):
+            return
         message = "path/to/recording"
-        self.__save(message)
-        self.__upload(message)
-        self.__notify("We have uploaded a recording")
+        rec = "arecord -f dat -D plughw:1,0 ~/recordings/rec001.wav"
+        print("recording")
+        self.proc = subprocess.Popen(rec, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
+        self.recording = True
+        #self.__save(message)
+        #self.__upload(message)
+        #self.__notify("We have uploaded a recording")
+
+    def stop_record(self):
+        if (not self.recording):
+            return
+        os.killpg(os.getpgid(self.proc.pid), signal.SIGTERM)
+        self.recording = False
 
     def play(self, filepath_to_message):
         """
@@ -238,6 +261,11 @@ def main():
     # TODO: check every N minutes if there are new messages/matches:
     # invoke __update_state every 5 minutes;
     controller = Controls()
+    while 1:
+        if (GPIO.input(controller.button) == False):
+            controller.record()
+        else:
+            controller.stop_record()
 
 if __name__ == "__main__":
     main()
