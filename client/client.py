@@ -74,14 +74,15 @@ class Controls:
             self.data[self.cmu]['unread'].pop(0)
         else:
             # Play the next message based on the position of the current read
-            pos = self.data[self.cmu]['read'].index(self.current_message)
+            # Add one for comparison with len and next selection
+            pos = self.data[self.cmu]['read'].index(self.current_message) + 1
             # We have read all the messages, so start from the beginning!
             if pos >= len(self.data[self.cmu]['read']):
                 # Set the current message to the start message
                 self.current_message = self.data[self.cmu]['read'][0]
             else:
                 # Otherwise we want the next read audio
-                self.current_message = self.data[self.cmu]['read'][pos + 1]
+                self.current_message = self.data[self.cmu]['read'][pos]
         self.play(self.current_message)
 
     def previous(self):
@@ -89,8 +90,7 @@ class Controls:
         Plays the previous message for the current matched user (cmu).
         """
         pos = self.data[self.cmu]['read'].index(self.current_message)
-        prev_msg = self.data[self.cmu]['read'][pos - 1]
-        self.current_message = prev_msg
+        self.current_message = self.data[self.cmu]['read'][pos - 1]
         self.play(self.current_message)
 
     def users(self):
@@ -98,18 +98,23 @@ class Controls:
         Switches the current matched user (cmu) to the next and loops back.
         """
         matches = [i for i in self.data.iterkeys()]
+
         # If there are no matches; no need to update state
-        if matches <= 1:
-            return
-        else:
-            cur_pos = matches.index(self.cmu)
+        if matches:
+            pos = matches.index(self.cmu) + 1
             # Ensure there are no out-of-bounds errors when the
             # last list item is checked; set next as first.
-            if (cur_pos + 1) >= len(matches):
+            if (pos) >= len(matches):
                 self.cmu = self.data.keys()[0]
             else:
-                self.cmu = self.data.keys(cur_pos + 1)
-            self.current_message = self.data[self.cmu]['read'][-1]
+                self.cmu = self.data.keys()[pos]
+            # Once the user switches we must change the current message
+            if self.data[self.cmu]['read']:
+                self.current_message = self.data[self.cmu]['read'][-1]
+            else:
+                self.current_message = self.data[self.cmu]['unread'][0]
+        else:
+            return
 
     def update_state(self):
         """
@@ -210,7 +215,7 @@ class Controls:
         import json
         import requests
 
-        res = requests.get(url=self.host + "api/matches" + "?user=" + self.api_key)
+        res = requests.get(url=self.host + "api/matches" + "?sender=" + self.api_key)
         # TODO: our service returns unicode; we could simplify this to strings.
         return [str(match) for match in json.loads(res.content)['matches']]
 

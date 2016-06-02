@@ -4,6 +4,18 @@ from app import app
 
 @app.route('/api/download', methods=['GET'])
 def download():
+    """
+    REST service: to enable a user (sender) to download all
+    unread audio messages from a conversation with a receiver.
+
+    Args:
+        sender (unicode): token of the user who made the request
+        receiver (unicode): token of the other user in their conversation
+        latest (int) number of audios the sender has on their system for this conversation
+
+    Returns:
+        Response: A zip file containing all the unread audio messages in a conversation.
+    """
     from app import db, models
     # All the messages sent within a conversation
     all_messages = db.session.query(models.Message).filter(
@@ -14,10 +26,10 @@ def download():
     num_client_msgs = int(request.args.get('latest'))
     # Compare the amount of messages the server knows with that of the client.
     if len(all_messages) > num_client_msgs:
-        # All messages a sender has recorded that the receiver does not have.
+        # Slices the list, retrieving all messages that the sender does not have.
         audio_files = all_messages[-(len(all_messages) - num_client_msgs):]
-        import zipfile
         import io
+        import zipfile
         # Store the zip-file to memory; prevents creating/deleting local zip.
         datafile = io.BytesIO()
         # Write all the new audios to a zip in a temporary directory
@@ -43,9 +55,16 @@ def download():
 
 @app.route('/api/upload', methods=['POST'])
 def upload():
-    # TODO: we are trusting user input in the Python upload script.
-    # TODO: store references in database for the messages.
+    """
+    REST service: allows a user (sender) to upload an audio message.
 
+    Args:
+        sender (unicode): token of the user who made the request
+        receiver (unicode): token of the other user in their conversation
+
+    Returns:
+        json: Success message if upload and storage worked. Otherwise BOOM!!
+    """
     if request.data:
         import base64
         import os
@@ -81,14 +100,22 @@ def upload():
 
 @app.route('/api/matches', methods=['GET'])
 def matches():
+    """
+    REST Service: finds all the matched pairs for a given user (the sender).
+
+    Args:
+        sender (unicode): token of the user who made the request
+
+    Returns:
+        json: a list of individuals who are matched with a given user
+    """
     from app import db, models
 
-    user = str(request.args.get('user'))
+    user = str(request.args.get('sender'))
     matches = None
 
     # IFF the user is known, then we can query for pairs.
     # A simple mechanism to overcome malicious intent.
-    # TODO: validate user input further; trust no-one, especially our users!
     if db.session.query(models.User).filter(models.User.token == user).first():
         matches = [usr.mid for usr in db.session.query(models.Pair).filter(
             models.Pair.uid == user).all()]
