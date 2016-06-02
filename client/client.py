@@ -187,7 +187,7 @@ class Controls:
         import json
         import requests
 
-        res = requests.get(url=self.host + "api/matches" + "?user=" + self.api_key)
+        res = requests.get(url=self.host + "api/matches" + "?sender=" + self.api_key)
         # TODO: our service returns unicode; we could simplify this to strings.
         return [str(match) for match in json.loads(res.content)['matches']]
 
