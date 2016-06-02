@@ -111,12 +111,12 @@ def matches():
     """
     from app import db, models
 
-    user = str(request.args.get('sender'))
+    sender = str(request.args.get('sender'))
     matches = None
 
     # IFF the user is known, then we can query for pairs.
     # A simple mechanism to overcome malicious intent.
-    if db.session.query(models.User).filter(models.User.token == user).first():
+    if db.session.query(models.User).filter(models.User.token == sender).first():
         matches = [usr.mid for usr in db.session.query(models.Pair).filter(
-            models.Pair.uid == user).all()]
+            models.Pair.uid == sender).all()]
     return jsonify({"matches": matches}), 201
