@@ -3,7 +3,13 @@ class Controls:
     host = "http://localhost:8080/"
 
     # Store for each matched user:
-    # {{ user: {read ['/path/to/audio1', ...], unread[]}, ... }
+    # {
+    #   user: {
+    #       read  ['/path/to/audio', ...],
+    #       unread['/path/to/audio', ...]
+    #   },
+    #   ...
+    # }
     data = {}
     # Current Matched User
     cmu = None
