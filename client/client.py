@@ -109,8 +109,10 @@ class Controls:
 
         if self.data[self.cmu]['unread']:
             self.current_message = self.data[self.cmu]['unread'][0]
-        else:
+        elif self.data[self.cmu]['read']:
             self.current_message = self.data[self.cmu]['read'][0]
+        else:
+            self.__notify("There are currently no messages. Record one?")
 
     def __upload(self, filepath_to_message):
         """
@@ -200,10 +202,13 @@ class Controls:
         Returns:
             list: a list paths to each message in the conversation.
         """
-        # TODO: this should exclude unread messages if they have not been read!
         import os
+        # We must create the path for when the first message is retrieved.
+        matched_user_path = "client/audios/" + user
+        if not os.path.exists(matched_user_path):
+            os.makedirs(matched_user_path)
         # NOTE: messages are stored by token; they are unique for each conversation.
-        return [f for f in os.listdir("client/audios/" + user) if ".ogg" in f]
+        return [f for f in os.listdir(matched_user_path) if ".ogg" in f]
 
     def __save(self, filepath_to_message):
         """

@@ -14,7 +14,13 @@ pair = models.Pair(user=first, match=second)
 db.session.add(pair)
 print "The two users (citizen & researcher) have been paired"
 print "TODO: put a file inside client/audios/rem"
-im = models.Message(mid=0, message="audios/rem/1",
+import os
+# We are testing with a text file, but the logic holds true
+path_to_audios_in_convo = 'audios/jay_rem/'
+os.makedirs(path_to_audios_in_convo)
+specific_audio_to_dl = path_to_audios_in_convo + "test"
+open(specific_audio_to_dl, 'w').write("hello world")
+im = models.Message(mid=0, message=specific_audio_to_dl,
                     status="sent", sender=first, receiver=second)
 db.session.add(im)
 print "An initial message has been sent by the first user."
