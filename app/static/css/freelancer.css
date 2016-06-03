@@ -86,7 +86,7 @@ header {
 }
 
 header .container {
-    padding-top: 100px;
+    padding-top: 50px;
     padding-bottom: 0;
 }
 
@@ -110,7 +110,7 @@ header .intro-text .skills {
 
 @media(min-width:768px) {
     header .container {
-        padding-top: 50px;
+        padding-top: 25px;
         padding-bottom: 0;
     }
 
@@ -486,9 +486,9 @@ footer .footer-below {
 }
 
 .embed-responsive, .embed-responsive-16by9 {
-  width: 50%;
-  margin: 0 auto;
-  padding-bottom: 30%
+    width: 30%;
+    margin: 0 auto;
+    padding-bottom: 13.5%;
 }
 
 .navbar {
