@@ -117,6 +117,12 @@ def matches():
     # IFF the user is known, then we can query for pairs.
     # A simple mechanism to overcome malicious intent.
     if db.session.query(models.User).filter(models.User.token == sender).first():
-        matches = [usr.mid for usr in db.session.query(models.Pair).filter(
-            models.Pair.uid == sender).all()]
+        # TODO: this is NOT an elegant way to acquire matched names
+        pairs = [(str(match.uid), str(match.mid)) for match in db.session.query(models.Pair).filter(
+            (models.Pair.uid == sender) | (models.Pair.mid == sender)
+        ).all()]
+        # Flatten the tuple pairs; we do not know if the sender is user/match
+        pairs = list(sum(pairs, ()))
+        # Remove the senders name from the list; only show matches
+        matches = [m for m in pairs if m != sender]
     return jsonify({"matches": matches}), 201
