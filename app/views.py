@@ -1,33 +1,42 @@
-from flask import render_template
-from app import app
+from flask import redirect, request, render_template
+from app import app, db, forms, models
 
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
-    # Landing page: what's the project about?
-    # Big button to "Get involved"
+    """
+    A description of the project and how to get involved.
+    """
     return render_template('index.html')
 
 
-@app.route('/researcher')
-def researcher():
-    # A form that allows participants to input their skills or projects?
-    # Drop-down for auto-completion
+@app.route('/participate', methods=['GET', 'POST'])
+def participate():
+    """
+    Provides a form for a researcher or citizen to sign-up to our service.
+    """
+    # TODO: De-couple validation from views through server-side validation
+    # by using WTForms. Opted not to do this due to time constraints.
+    if request.method == "POST":
+        # TODO: we trust our users input... Ohhhh my -- George Takei
+        import hashlib
+        import uuid
+        # TODO: using sha256 is extremely insecure, though
+        # demonstrates the idea behind using a unique token.
+        name = request.form['forename'] + request.form['surname']
+        token = hashlib.sha256(uuid.uuid4().hex + name).hexdigest()
+        # All is well; let's add a new user and their skills to our system!
+        nuser = models.User(token=token,
+                            role=request.form['role'],
+                            name=name,
+                            email=request.form['email'],
+                            address=request.form['address'])
+        db.session.add(nuser)
+        db.session.commit()
+        # Add skills separately, though link them to this specific user.
+        us = models.UserSkills(uid=token, skills=request.form['skills'])
+        db.session.add(us)
+        db.session.commit()
+        # TODO: flash a message to the user to say all went well!
+        return redirect('/')
     return render_template('form.html')
-
-
-@app.route('/citizen')
-def citizen():
-    # get all the data
-    # store it into a database
-    return render_template('form.html')
-
-
-def __selection():
-    # It's only words and words are all I have...
-    # Using the citizens skills (words) & researchers desired skills (words):
-    #   How best do we match a citizen to a researcher?
-    # This algorithm runs NIGHTLY to kick-off the next stage -- send artefact.
-    # Therefore, we should send an email to inform participants that a device
-    # will be sent to them within a given timeframe?
-    return 0

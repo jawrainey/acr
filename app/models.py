@@ -12,8 +12,7 @@ class User(db.Model):
     # Generated client-side to prevent malicious intent.
     token = db.Column(db.String, primary_key=True)
     role = db.Column(db.String)
-    forename = db.Column(db.String)
-    surname = db.Column(db.String)
+    name = db.Column(db.String)
     email = db.Column(db.String)
     age = db.Column(db.Integer)
     # Only ever read by developers to send artefact; free-form is fine.
@@ -68,9 +67,11 @@ class UserSkills(db.Model):
     Stores references to all skills defined by a user through normalisation.
     """
     __tablename__ = 'userSkills'
-
+    # TODO: this needs abstracted with the above Skill table
     uid = db.Column(db.String, db.ForeignKey('users.token'), primary_key=True)
-    sid = db.Column(db.String, db.ForeignKey('skills.sid'), primary_key=True)
+    # Previously considered storing skills in a table to normalise and share
+    # skills between users. This would also enable LinkedIn-like auto-complete.
+    # This would also simplify the match-making algorithm.
+    skills = db.Column(db.String)
     # Relation: a user can have many skills, including those defined by others.
     user = db.relationship('User', foreign_keys=uid)
-    skill = db.relationship('Skill', foreign_keys=sid)

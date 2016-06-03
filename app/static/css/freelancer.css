@@ -491,6 +491,9 @@ footer .footer-below {
     padding-bottom: 13.5%;
 }
 
-.navbar {
-    margin-bottom: 0;
+.navbar { margin-bottom: 0; }
+
+#form {
+    border-width: 1px;
+    border-radius: 0;
 }
