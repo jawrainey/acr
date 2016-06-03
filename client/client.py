@@ -33,14 +33,19 @@ class Controls:
         #self.update_state()        
         # setup pins
         GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(self.rec_button, GPIO.IN, GPIO.PUD_UP)
-        GPIO.setup(self.play_button, GPIO.IN, GPIO.PUD_UP)
-        GPIO.setup(self.prev_button, GPIO.IN, GPIO.PUD_UP)
-        GPIO.setup(self.next_button, GPIO.IN, GPIO.PUD_UP)
-        GPIO.setup(self.user_button, GPIO.IN, GPIO.PUD_UP)
-        #start reccounter
-        counter = 1
-        print ("Starting Server")
+        GPIO.setup(self.rec_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(self.play_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(self.prev_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(self.next_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(self.user_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        #test vars
+        self.cmu = 'aare'
+        self.data['aare'] = {}
+        self.data['aare']['read'] = ['~/recordings/rec001.wav','~/recordings/rec002.wav','~/recordings/rec003.wav']
+        self.data['aare']['unread'] = []
+        self.current_message = self.data['aare']['read'][-1]
+        print ("Starting Client")
+
 
     def record(self):
         """
@@ -49,7 +54,7 @@ class Controls:
         if (self.recording):
             return
         message = "path/to/recording"
-        rec = "arecord -f dat -D plughw:1,0 ~/recordings/rec003.wav"
+        rec = "arecord -f dat -D plughw:1,0 ~/recordings/rec002.wav"
         print("recording")
         self.proc = subprocess.Popen(rec, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
         self.recording = True
@@ -64,29 +69,37 @@ class Controls:
         self.recording = False
         self.proc = None
 
-    def play(self, filepath_to_message = None):
+
+    def play(self, channel, filepath_to_message = None):
         """
         Plays an audio message from a given path.
 
         Args:
             filepath_to_message (str): the path to the audio message.
         """
-        if (self.playing):
-            if self.message:
-                #self.playing = False
-                self.stop_play()
+        #check for the button again
+        if channel == self.play_button and GPIO.input(self.play_button) != False:
             return
 
+        '''
+        if (self.playing):
+            #if self.message:
+            #    self.playing = False
+            self.stop_play()
+            return
+        ''' 
         if not filepath_to_message:
             filepath_to_message = self.current_message
         
         #subprocess.call(["afplay", filepath_to_message])         
-        self.playing = True
-        play = "aplay "+filepath_to_message
+        #self.playing = True
+        play = "aplay "+ str(filepath_to_message)
         self.__notify("We are playing a recording")  
-        self.proc = subprocess.Popen(play, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
+        #self.proc = subprocess.Popen(play, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
+        self.proc = subprocess.call(play, shell=True)
+        self.__notify("We are stopping a recording")
         #writes stdout, stderr to varible when process has ended or errored
-        self.message = self.proc.communicate()
+        #self.message = self.proc.communicate()
         
 
     def stop_play(self):
@@ -96,16 +109,15 @@ class Controls:
         self.playing = False
         self.proc = None
 
-    def next(self):
+    def next(self,channel):
         """
         Plays the next unread message (if any) for the matched user otherwise
         plays the next read message, including looping back to the start.
         """
-        self.cmu = 'aare'
-        self.data['aare'] = {}
-        self.data['aare']['read'] = ['~/recordings/rec001.wav','~/recordings/rec002.wav','~/recordings/rec003.wav']
-        self.data['aare']['unread'] = []
-        self.current_message = self.data['aare']['read'][-1]
+        #check for the button again
+        if GPIO.input(self.next_button) != False:
+            return
+
         if self.data[self.cmu]['unread']:
             # then add to the end of the read list and remove from unread list
             self.current_message = self.data[self.cmu]['unread'][0]
@@ -124,18 +136,28 @@ class Controls:
                 self.current_message = self.data[self.cmu]['read'][pos]
         self.play(self.current_message)
 
-    def previous(self):
+    def previous(self, channel):
         """
         Plays the previous message for the current matched user (cmu).
         """
+
+        #check for the button again
+        if GPIO.input(self.prev_button) != False:
+            return
+
         pos = self.data[self.cmu]['read'].index(self.current_message)
         self.current_message = self.data[self.cmu]['read'][pos - 1]
         self.play(self.current_message)
 
-    def users(self):
+    def users(self,channel):
         """
         Switches the current matched user (cmu) to the next and loops back.
         """
+
+        #check for the button again
+        if GPIO.input(self.user_button) != False:
+            return
+
         matches = [i for i in self.data.iterkeys()]
 
         # If there are no matches; no need to update state
@@ -300,25 +322,24 @@ class Controls:
     def __notify(self, message):
         print "Flash: " + message
 
+    def my_callback(self, channel):
+        if GPIO.input(self.user_button) == False:
+            print("callback")                                
+
 
 def main():
     # TODO: check every N minutes if there are new messages/matches:
     # invoke __update_state every 5 minutes;
     controller = Controls()
+    GPIO.add_event_detect(controller.user_button, GPIO.FALLING, callback=controller.users, bouncetime=300)
+    GPIO.add_event_detect(controller.play_button, GPIO.FALLING, callback=controller.play, bouncetime=300)
+    GPIO.add_event_detect(controller.prev_button, GPIO.FALLING, callback=controller.previous, bouncetime=300)
+    GPIO.add_event_detect(controller.next_button, GPIO.FALLING, callback=controller.next, bouncetime=300)
     while 1:
         if (GPIO.input(controller.rec_button) == False):
             controller.record()
         else:
             controller.stop_record()
-
-        if (GPIO.input(controller.play_button) == False):
-            controller.play('~/recordings/rec001.wav')
-
-        if (GPIO.input(controller.prev_button) == False):
-            controller.previous()
-
-        if (GPIO.input(controller.next_button) == False):
-            controller.next()
 
 
 if __name__ == "__main__":
