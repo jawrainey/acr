@@ -1,7 +1,7 @@
 import RPi.GPIO as GPIO
 
 class Controls:
-    api_key = 'rem'
+    api_key = 'jay'
     host = "http://localhost:8080/"
 
     # Store for each matched user:
@@ -24,8 +24,7 @@ class Controls:
     rec_button = 7
     play_button = 11
     prev_button = 13
-    next_button = 16
-    user_button = 15
+    next_button = 15
     proc = None
     recording = False
     playing = False
@@ -40,7 +39,7 @@ class Controls:
         GPIO.setup(self.play_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(self.prev_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(self.next_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.setup(self.user_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        #GPIO.setup(self.user_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         #test vars
         '''
         self.cmu = 'aare'
@@ -98,10 +97,13 @@ class Controls:
             channel (int): the current pin engaged
             filepath_to_message (str): the path to the audio message.
         """
+
         #check if the method is initialised by the play_button 
         #check for the button again and do an early return
         if channel == self.play_button and GPIO.input(self.play_button) != False:
             return
+
+        import subprocess
 
         '''
         if (self.playing):
@@ -124,8 +126,13 @@ class Controls:
         
 
     def stop_play(self):
+
         if (not self.playing):
             return
+        
+        import os
+        import signal
+
         os.killpg(os.getpgid(self.proc.pid), signal.SIGTERM)
         self.playing = False
         self.proc = None
@@ -176,6 +183,7 @@ class Controls:
         self.current_message = self.data[self.cmu]['read'][pos - 1]
         self.play(self.current_message)
 
+    '''
     def users(self,channel):
         """
         Switches the current matched user (cmu) to the next and loops back.
@@ -206,7 +214,8 @@ class Controls:
                 self.current_message = self.data[self.cmu]['unread'][0]
         else:
             return
-
+    '''
+    
     def update_state(self):
         """
         Used to modify the current state for all matched users, includes:
@@ -337,7 +346,7 @@ def main():
     # TODO: check every N minutes if there are new messages/matches:
     # invoke __update_state every 5 minutes;
     controller = Controls()
-    GPIO.add_event_detect(controller.user_button, GPIO.FALLING, callback=controller.users, bouncetime=300)
+    #GPIO.add_event_detect(controller.user_button, GPIO.FALLING, callback=controller.users, bouncetime=300)
     GPIO.add_event_detect(controller.play_button, GPIO.FALLING, callback=controller.play, bouncetime=300)
     GPIO.add_event_detect(controller.prev_button, GPIO.FALLING, callback=controller.previous, bouncetime=300)
     GPIO.add_event_detect(controller.next_button, GPIO.FALLING, callback=controller.next, bouncetime=300)
