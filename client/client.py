@@ -1,7 +1,8 @@
 import RPi.GPIO as GPIO
 
+
 class Controls:
-    api_key = 'rem'
+    api_key = 'jay'
     host = "http://localhost:8080/"
 
     # Store for each matched user:
@@ -22,8 +23,8 @@ class Controls:
     rec_button = 7
     play_button = 11
     prev_button = 13
-    next_button = 16
-    user_button = 15
+    next_button = 15
+    user_button = 16
     proc = None
     recording = False
     playing = False
