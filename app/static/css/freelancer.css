@@ -486,9 +486,9 @@ footer .footer-below {
 }
 
 .embed-responsive, .embed-responsive-16by9 {
-    width: 30%;
+    width: 35%;
     margin: 0 auto;
-    padding-bottom: 13.5%;
+    padding-bottom: 17.5%;
 }
 
 .navbar { margin-bottom: 0; }
@@ -497,3 +497,5 @@ footer .footer-below {
     border-width: 1px;
     border-radius: 0;
 }
+
+.indent { text-indent: 1.5em; }
