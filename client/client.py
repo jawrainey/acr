@@ -17,10 +17,8 @@ class Controls:
     cmu = None
     # Path to the current message for current user
     current_message = None
-    #last recording
-    recmessage = None
 
-    #button pins
+    # The pins to invoke method calls on the raspberry PI
     rec_button = 7
     play_button = 11
     prev_button = 13
@@ -29,27 +27,16 @@ class Controls:
     proc = None
     recording = False
     playing = False
-    counter = None
 
     def __init__(self):
-        print ("Starting Client")
-        self.update_state()        
-        # setup pins using board numbers
+        self.update_state()
+        # Setup pins using board numbers
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.rec_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(self.play_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(self.prev_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(self.next_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(self.user_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        #test vars
-        '''
-        self.cmu = 'aare'
-        self.data['aare'] = {}
-        self.data['aare']['read'] = ['~/recordings/rec001.wav','~/recordings/rec002.wav','~/recordings/rec003.wav']
-        self.data['aare']['unread'] = []
-        self.current_message = self.data['aare']['read'][-1]
-        '''
-
 
     def record(self):
         """
@@ -62,35 +49,32 @@ class Controls:
         import os
         import subprocess
         import time
-        
-        self.recmessage = 'client/audios/' + self.cmu + '/' + str(int(time.time() + (60*60))) + '.wav'
-        rec = "arecord -f dat -D plughw:1,0 " + self.recmessage
-        print("Recording")
-        self.proc = subprocess.Popen(rec, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
+
+        self.current_message = ('client/audios/' + self.cmu + '/' +
+                                str(int(time.time() + (60*60))) + '.wav')
+        rec = "arecord -f dat -D plughw:1,0 " + self.current_message
+        self.proc = subprocess.Popen(rec, stdout=subprocess.PIPE,
+                                     shell=True, preexec_fn=os.setsid)
         self.recording = True
-        #TODO start blinking the record light
 
     def stop_record(self):
         """
-        Stops recording when button is released and then uploads an audio message.
+        Stops recording when button is released, then uploads an audio message.
         """
-        
+
         if (not self.recording):
             return
-        
+
         import os
         import signal
 
-        
         os.killpg(os.getpgid(self.proc.pid), signal.SIGTERM)
-        #TODO stop blinking the record light
         self.recording = False
         self.proc = None
-        self.__upload(self.recmessage)
+        self.__upload(self.current_message)
         self.__notify("We have uploaded a recording")
 
-
-    def play(self, channel, filepath_to_message = None):
+    def play(self, channel, filepath_to_message=None):
         """
         Plays an audio message from a given path.
 
@@ -98,39 +82,22 @@ class Controls:
             channel (int): the current pin engaged
             filepath_to_message (str): the path to the audio message.
         """
-        #check if the method is initialised by the play_button 
-        #check for the button again and do an early return
-        if channel == self.play_button and GPIO.input(self.play_button) != False:
+        # Check if the method is initialised by the play_button
+        # Check for the button again and do an early return
+        if (channel == self.play_button and
+                GPIO.input(self.play_button) is not False):
             return
 
-        '''
-        if (self.playing):
-            #if self.message:
-            #    self.playing = False
-            self.stop_play()
-            return
-        ''' 
         if not filepath_to_message:
             filepath_to_message = self.current_message
-        
 
-        play = "aplay "+ str(filepath_to_message)
-        self.__notify("We are playing a recording")  
-        #self.proc = subprocess.Popen(play, stdout=subprocess.PIPE, shell=True, preexec_fn=os.setsid)
-        self.proc = subprocess.call(play, shell=True)
+        import subprocess
+
+        self.__notify("We are playing a recording")
+        self.proc = subprocess.call("aplay " + filepath_to_message, shell=True)
         self.__notify("We are stopping a recording")
-        #writes stdout, stderr to varible when process has ended or errored
-        #self.message = self.proc.communicate()
-        
 
-    def stop_play(self):
-        if (not self.playing):
-            return
-        os.killpg(os.getpgid(self.proc.pid), signal.SIGTERM)
-        self.playing = False
-        self.proc = None
-
-    def next(self,channel):
+    def next(self, channel):
         """
         Plays the next unread message (if any) for the matched user otherwise
         plays the next read message, including looping back to the start.
@@ -138,8 +105,7 @@ class Controls:
         Args:
             channel (int): the current pin engaged
         """
-        #check for the button again
-        if GPIO.input(self.next_button) != False:
+        if GPIO.input(self.next_button) is not False:
             return
 
         if self.data[self.cmu]['unread']:
@@ -167,25 +133,21 @@ class Controls:
         Args:
             channel (int): the current pin engaged
         """
-
-        #check for the button again
-        if GPIO.input(self.prev_button) != False:
+        if GPIO.input(self.prev_button) is not False:
             return
 
         pos = self.data[self.cmu]['read'].index(self.current_message)
         self.current_message = self.data[self.cmu]['read'][pos - 1]
         self.play(self.current_message)
 
-    def users(self,channel):
+    def users(self, channel):
         """
         Switches the current matched user (cmu) to the next and loops back.
 
         Args:
             channel (int): the current pin engaged
         """
-
-        #check for the button again
-        if GPIO.input(self.user_button) != False:
+        if GPIO.input(self.user_button) is not False:
             return
 
         matches = [i for i in self.data.iterkeys()]
@@ -242,13 +204,11 @@ class Controls:
             filepath_to_message (str): the path to the audio message.
         """
         import base64
-        import time
         import requests
 
         # NOTE: messages are stored locally for instant playback and browsing.
         with open(filepath_to_message, 'rb') as af:
             voice_message = af.read()
-        #self.recmessage = 'client/audios/' + self.cmu + '/' + str(int(time.time() + (60*60))) + '.wav'
         # NOTE: encode to binary to send with json in one request
         res = requests.post(url=self.host + "api/upload",
                             json={'sender': self.api_key,
@@ -268,7 +228,7 @@ class Controls:
 
         Args:
             receiver (str): the other user in the conversation.
-            num_messages (int): the number of messages in a conversation with receiver.
+            num_messages (int): number of messages in conversation with receiver
 
         Returns:
             list: The paths to the unread (new) audio messages by the receiver.
@@ -306,8 +266,9 @@ class Controls:
         import json
         import requests
 
-        res = requests.get(url=self.host + "api/matches" + "?sender=" + self.api_key)
-        # TODO: our service returns unicode; we could simplify this to strings.
+        res = requests.get(
+            url=self.host + "api/matches" + "?sender=" + self.api_key)
+        # TODO: the service returns unicode; we could simplify this to strings.
         return [str(match) for match in json.loads(res.content)['matches']]
 
     def __all_messages(self, user):
@@ -326,23 +287,28 @@ class Controls:
         matched_user_path = "client/audios/" + user
         if not os.path.exists(matched_user_path):
             os.makedirs(matched_user_path)
-        # NOTE: messages are stored by token; they are unique for each conversation.
+        # NOTE: messages are stored by token; unique for each conversation.
         return [f for f in os.listdir(matched_user_path) if ".wav" in f]
 
     def __notify(self, message):
-        print "Flash: " + message                              
+        print "Flash: " + message
 
 
 def main():
     # TODO: check every N minutes if there are new messages/matches:
     # invoke __update_state every 5 minutes;
     controller = Controls()
-    GPIO.add_event_detect(controller.user_button, GPIO.FALLING, callback=controller.users, bouncetime=300)
-    GPIO.add_event_detect(controller.play_button, GPIO.FALLING, callback=controller.play, bouncetime=300)
-    GPIO.add_event_detect(controller.prev_button, GPIO.FALLING, callback=controller.previous, bouncetime=300)
-    GPIO.add_event_detect(controller.next_button, GPIO.FALLING, callback=controller.next, bouncetime=300)
-    while 1:
-        if (GPIO.input(controller.rec_button) == False):
+    GPIO.add_event_detect(controller.user_button, GPIO.FALLING,
+                          callback=controller.users, bouncetime=300)
+    GPIO.add_event_detect(controller.play_button, GPIO.FALLING,
+                          callback=controller.play, bouncetime=300)
+    GPIO.add_event_detect(controller.prev_button, GPIO.FALLING,
+                          callback=controller.previous, bouncetime=300)
+    GPIO.add_event_detect(controller.next_button, GPIO.FALLING,
+                          callback=controller.next, bouncetime=300)
+
+    while True:
+        if (GPIO.input(controller.rec_button) is False):
             controller.record()
         else:
             controller.stop_record()

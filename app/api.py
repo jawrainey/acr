@@ -11,10 +11,10 @@ def download():
     Args:
         sender (unicode): token of the user who made the request
         receiver (unicode): token of the other user in their conversation
-        latest (int) number of audios the sender has on their system for this conversation
+        latest (int) number of audios the sender has for the conversation
 
     Returns:
-        Response: A zip file containing all the unread audio messages in a conversation.
+        Response: zip file containing all unread audio messages in conversation
     """
     from app import db, models
     # All the messages sent within a conversation
@@ -26,7 +26,7 @@ def download():
     num_client_msgs = int(request.args.get('latest'))
     # Compare the amount of messages the server knows with that of the client.
     if len(all_messages) > num_client_msgs:
-        # Slices the list, retrieving all messages that the sender does not have.
+        # Slices the list, retrieving all messages that sender does not have.
         audio_files = all_messages[-(len(all_messages) - num_client_msgs):]
         import io
         import zipfile
@@ -116,9 +116,11 @@ def matches():
 
     # IFF the user is known, then we can query for pairs.
     # A simple mechanism to overcome malicious intent.
-    if db.session.query(models.User).filter(models.User.token == sender).first():
+    if db.session.query(models.User).filter(
+            models.User.token == sender).first():
         # TODO: this is NOT an elegant way to acquire matched names
-        pairs = [(str(match.uid), str(match.mid)) for match in db.session.query(models.Pair).filter(
+        pairs = [(str(match.uid), str(match.mid))
+                 for match in db.session.query(models.Pair).filter(
             (models.Pair.uid == sender) | (models.Pair.mid == sender)
         ).all()]
         # Flatten the tuple pairs; we do not know if the sender is user/match
