@@ -74,6 +74,7 @@ class Controls:
         self.proc = None
         self.__upload(self.current_message)
         self.__notify("We have uploaded a recording")
+        self.data[self.cmu]['read'].append(self.current_message)
 
     def play(self, channel, filepath_to_message=None):
         """
