@@ -289,7 +289,8 @@ class Controls:
         if not os.path.exists(matched_user_path):
             os.makedirs(matched_user_path)
         # NOTE: messages are stored by token; unique for each conversation.
-        return [f for f in os.listdir(matched_user_path) if ".wav" in f]
+        return [matched_user_path + "/" + f
+                for f in os.listdir(matched_user_path) if ".wav" in f]
 
     def __notify(self, message):
         print "Flash: " + message
