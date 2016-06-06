@@ -34,7 +34,7 @@ def participate():
         token = hashlib.sha256(uuid.uuid4().hex + name).hexdigest()
         # All is well; let's add a new user and their skills to our system!
         nuser = models.User(token=token,
-                            role=session.get("role", request.form['role']),
+                            role=session.get("role") or request.form['role'],
                             name=name,
                             email=request.form['email'],
                             address=request.form['address'])
@@ -44,6 +44,9 @@ def participate():
         us = models.UserSkills(uid=token, skills=request.form['skills'])
         db.session.add(us)
         db.session.commit()
+        # Invoke matchmaking for known users against the new recruit.
+        import matchmaking
+        matchmaking.matchmaking()
         # TODO: flash a message to the user to say all went well!
         return redirect('/')
     return render_template('form.html')
