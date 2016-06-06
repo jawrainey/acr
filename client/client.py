@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 
 
 class Controls:
-    api_key = 'jay'
+    api_key = 'rem'
     host = "http://localhost:8080/"
 
     # Store for each matched user:
@@ -51,7 +51,7 @@ class Controls:
         import subprocess
         import time
 
-        self.current_message = ('client/audios/' + self.cmu + '/' +
+        self.current_message = ('audios/' + self.cmu + '/' +
                                 str(int(time.time() + (60*60))) + '.wav')
         rec = "arecord -f dat -D plughw:1,0 " + self.current_message
         self.proc = subprocess.Popen(rec, stdout=subprocess.PIPE,
@@ -246,7 +246,7 @@ class Controls:
             import zipfile
             # In memory-stream used as ZipFile constructor expects a file.
             # Prevents a zip file being saved locally that need not be removed.
-            path = 'client/audios/' + receiver + '/'
+            path = 'audios/' + receiver + '/'
             with zipfile.ZipFile(io.BytesIO(res.content), 'r') as zf:
                 zf.extractall(path)
             # A list of locations to unread messages from sender to receiver
@@ -285,7 +285,7 @@ class Controls:
         """
         import os
         # We must create the path for when the first message is retrieved.
-        matched_user_path = "client/audios/" + user
+        matched_user_path = "audios/" + user
         if not os.path.exists(matched_user_path):
             os.makedirs(matched_user_path)
         # NOTE: messages are stored by token; unique for each conversation.

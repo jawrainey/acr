@@ -18,10 +18,13 @@ def download():
     """
     from app import db, models
     # All the messages sent within a conversation
+    # TODO: this is extremely untidy!
     all_messages = db.session.query(models.Message).filter(
-        models.Message.sid == str(request.args.get('sender')),
-        models.Message.rid == str(request.args.get('receiver'))).order_by(
-            models.Message.mid).all()
+        (models.Message.sid == str(request.args.get('sender')) and
+         models.Message.rid == str(request.args.get('receiver'))) |
+        (models.Message.sid == str(request.args.get('receiver')) and
+         models.Message.rid == str(request.args.get('sender')))
+    ).order_by(models.Message.mid).all()
 
     num_client_msgs = int(request.args.get('latest'))
     # Compare the amount of messages the server knows with that of the client.
@@ -76,11 +79,19 @@ def upload():
 
         # Upload to a shared conversation folder by unique tokens.
         # Store in the root of the flask application.
-        ufiles = "audios/" + sender + "_" + receiver
+        ufiles = None
+        import glob
+
+        # Ensures files between conversation go to a shared, unique folder.
+        for conversation_folder in glob.glob("audios/*"):
+            if sender and receiver in conversation_folder:
+                ufiles = conversation_folder
+                break
 
         # For when a user first publishes a file.
-        if not os.path.exists(ufiles):
-            os.makedirs(ufiles)
+        if not ufiles:
+            # Whoever sends the first message has their name first
+            os.makedirs("audios/" + sender + "_" + receiver)
 
         # A UNIX timestamp is used to uniquely identify the file
         path = ufiles + "/" + str(request.json['filename'])
