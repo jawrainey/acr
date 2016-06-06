@@ -87,7 +87,7 @@ class Controls:
         # Check if the method is initialised by the play_button
         # Check for the button again and do an early return
         if (channel == self.play_button and
-                GPIO.input(self.play_button) is not False):
+                GPIO.input(self.play_button) != False):
             return
 
         if not filepath_to_message:
@@ -107,7 +107,7 @@ class Controls:
         Args:
             channel (int): the current pin engaged
         """
-        if GPIO.input(self.next_button) is not False:
+        if GPIO.input(self.next_button) != False:
             return
 
         if self.data[self.cmu]['unread']:
@@ -135,7 +135,7 @@ class Controls:
         Args:
             channel (int): the current pin engaged
         """
-        if GPIO.input(self.prev_button) is not False:
+        if GPIO.input(self.prev_button) != False:
             return
 
         pos = self.data[self.cmu]['read'].index(self.current_message)
@@ -149,7 +149,7 @@ class Controls:
         Args:
             channel (int): the current pin engaged
         """
-        if GPIO.input(self.user_button) is not False:
+        if GPIO.input(self.user_button) != False:
             return
 
         matches = [i for i in self.data.iterkeys()]
@@ -311,7 +311,7 @@ def main():
                           callback=controller.next, bouncetime=300)
 
     while True:
-        if (GPIO.input(controller.rec_button) is False):
+        if (GPIO.input(controller.rec_button) == False):
             controller.record()
         else:
             controller.stop_record()
