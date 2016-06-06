@@ -43,12 +43,12 @@ on the citizen's skills and the researchers desired skills for a project.
 ### Technologies used
 
 - [Server codebase](https://github.com/jawrainey/jar/tree/master/app)
-    - [Python Flask](http://flask.pocoo.org/) as the back-end
+    - [Python Flask](http://flask.pocoo.org/) framework to power the back-end
     - [Flask-SQLAlchemy](http://flask-sqlalchemy.pocoo.org/2.1/) for storage and
     [ORM](https://github.com/jawrainey/jar/blob/master/app/models.py) to simplify database access
-    - [Requests](http://docs.python-requests.org/en/master/) to provide a REST service
+    - [Requests](http://docs.python-requests.org/en/master/) to create a REST service for audio access and transmission
     - [Bootstrap Freelancer](https://github.com/BlackrockDigital/startbootstrap-freelancer)
-heavily modified for sign-up website
+heavily modified theme for sign-up website
 
 - [Client codebase](https://github.com/jawrainey/jar/tree/master/client)
     - [RPIO](https://github.com/metachris/RPIO) to invoke Python methods when
