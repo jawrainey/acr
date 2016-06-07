@@ -30,7 +30,6 @@ class Controls:
     playing = False
 
     def __init__(self):
-        self.update_state()
         # Setup pins using board numbers
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.rec_button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -197,6 +196,10 @@ class Controls:
         else:
             self.__notify("There are currently no messages. Record one?")
 
+        import threading
+        # Check for new matches and messages every five minute
+        threading.Timer(60 * 5, self.update_state).start()
+
     def __upload(self, filepath_to_message):
         """
         Uploads the users audio message to the server from a given path,
@@ -301,6 +304,7 @@ def main():
     # TODO: check every N minutes if there are new messages/matches:
     # invoke __update_state every 5 minutes;
     controller = Controls()
+    controller.update_state()
     GPIO.add_event_detect(controller.user_button, GPIO.FALLING,
                           callback=controller.users, bouncetime=300)
     GPIO.add_event_detect(controller.play_button, GPIO.FALLING,
