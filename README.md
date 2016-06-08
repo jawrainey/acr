@@ -57,9 +57,6 @@ heavily modified theme for sign-up website
     - [Bespoke software](https://github.com/jawrainey/jar/tree/master/client/client.py)
     interacting with the REST service to provides core features to each PI
 
-Details of the [conversation structure](), [software architecture](), [database design](), and
-the [hardware]() required to run the system are detailed on the [Wikipedia]().
-
 ### Repository structure
 
 This repository hosts the codebase for the client _(audio communication between devices)_ and
